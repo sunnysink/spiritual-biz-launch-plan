@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Launch Plan Forge | Voice Memo to Structured Launch Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Hanken+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0d1411;
+  --bg2: #101a16;
+  --ink: #F1E7D6;
+  --ink-dim: #BDB09A;
+  --copper: #C6955C;
+  --copper-lt: #E2B884;
+  --ember: #E8743B;
+  --ember-glow: #FF8A4C;
+  --forest: #2C5F5A;
+  --mauve: #9B7C8B;
+  --gold: #D8B968;
+  --card: rgba(22,34,28,0.72);
+  --card-bd: rgba(198,149,92,0.20);
+  --serif: 'Cormorant Garamond', 'Hoefler Text', Georgia, serif;
+  --sans: 'Hanken Grotesk', system-ui, -apple-system, sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  background-image:
+    radial-gradient(900px 600px at 15% -5%, rgba(232,116,59,0.10), transparent 55%),
+    radial-gradient(800px 700px at 95% 10%, rgba(198,149,92,0.10), transparent 50%),
+    radial-gradient(700px 600px at 50% 110%, rgba(44,95,90,0.14), transparent 55%);
+  color: var(--ink);
+  min-height: 100vh;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* ---- ambient embers ---- */
+.embers { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+.ember {
+  position: absolute; bottom: -20px;
+  width: 3px; height: 3px; border-radius: 50%;
+  background: var(--ember-glow);
+  box-shadow: 0 0 8px 2px rgba(255,138,76,0.5);
+  opacity: 0;
+  animation: rise linear infinite;
+}
+@keyframes rise {
+  0% { transform: translateY(0) translateX(0); opacity: 0; }
+  10% { opacity: 0.8; }
+  90% { opacity: 0.5; }
+  100% { transform: translateY(-100vh) translateX(40px); opacity: 0; }
+}
+
+.wrap { position: relative; z-index: 1; max-width: 780px; margin: 0 auto; padding: 4rem 1.5rem 5rem; }
+
+/* ---- header ---- */
+.kicker {
+  font-family: var(--mono);
+  font-size: 0.7rem; font-weight: 500;
+  letter-spacing: 0.28em; text-transform: uppercase;
+  color: var(--copper); text-align: center; margin-bottom: 1.25rem;
+}
+.title {
+  font-family: var(--serif); font-weight: 600;
+  font-size: clamp(2.6rem, 7vw, 4.2rem);
+  line-height: 1.02; text-align: center; letter-spacing: -0.01em;
+  background: linear-gradient(100deg, var(--copper-lt) 0%, var(--ember-glow) 32%, var(--gold) 62%, var(--copper) 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+  animation: shimmer 7s ease-in-out infinite;
+}
+@keyframes shimmer { 0%,100% { background-position: 0% center; } 50% { background-position: 100% center; } }
+.lede {
+  text-align: center; max-width: 560px; margin: 1.5rem auto 0;
+  font-size: 1.1rem; color: var(--ink-dim);
+}
+.lede b { color: var(--ink); font-weight: 600; }
+
+/* ---- promise strip ---- */
+.promise {
+  display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;
+  margin: 2.5rem 0 0;
+}
+.promise .pill {
+  font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.06em;
+  color: var(--copper-lt);
+  border: 1px solid var(--card-bd); border-radius: 30px;
+  padding: 0.5rem 1rem; background: rgba(198,149,92,0.06);
+}
+
+/* ---- how it works rail ---- */
+.rail {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+  margin: 3.5rem 0 1rem;
+}
+.rail .step {
+  text-align: center; padding: 1rem 0.5rem;
+  border-top: 2px solid rgba(198,149,92,0.25);
+}
+.rail .n { font-family: var(--mono); font-size: 0.7rem; color: var(--ember); letter-spacing: 0.1em; }
+.rail .t { font-family: var(--serif); font-size: 1.35rem; color: var(--ink); margin-top: 0.25rem; }
+.rail .d { font-size: 0.82rem; color: var(--ink-dim); margin-top: 0.35rem; }
+
+/* ---- card ---- */
+.card {
+  position: relative;
+  background: var(--card);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--card-bd);
+  border-radius: 16px;
+  padding: 2rem 1.85rem;
+  margin-top: 1.75rem;
+  overflow: hidden;
+}
+.card::before {
+  content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+  background: linear-gradient(180deg, var(--copper), var(--ember), var(--gold));
+}
+.card-head { display: flex; align-items: baseline; gap: 0.85rem; margin-bottom: 0.4rem; }
+.card-num {
+  font-family: var(--mono); font-size: 0.78rem; font-weight: 600;
+  color: var(--bg); background: var(--copper);
+  width: 26px; height: 26px; border-radius: 7px;
+  display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto;
+  align-self: center;
+}
+.card-title { font-family: var(--serif); font-size: 1.9rem; font-weight: 600; color: var(--ink); line-height: 1.1; }
+.card-sub { font-size: 0.92rem; color: var(--copper-lt); font-family: var(--mono); letter-spacing: 0.04em; margin-bottom: 1.1rem; }
+.card p { color: var(--ink-dim); margin: 0.7rem 0; }
+.card p b { color: var(--ink); font-weight: 600; }
+
+.teach {
+  border-left: 2px solid rgba(155,124,139,0.4);
+  padding: 0.2rem 0 0.2rem 1rem; margin: 1rem 0;
+  font-size: 0.95rem; color: var(--ink-dim);
+}
+.teach b { color: var(--mauve); }
+
+/* ---- talk track list ---- */
+.track { list-style: none; counter-reset: q; margin: 1.25rem 0 0.5rem; }
+.track li {
+  counter-increment: q; position: relative;
+  padding: 0.85rem 0 0.85rem 2.6rem;
+  border-bottom: 1px dashed rgba(198,149,92,0.16);
+}
+.track li:last-child { border-bottom: none; }
+.track li::before {
+  content: counter(q); position: absolute; left: 0; top: 0.8rem;
+  font-family: var(--mono); font-size: 0.72rem; color: var(--ember);
+  border: 1px solid rgba(232,116,59,0.4); border-radius: 50%;
+  width: 1.7rem; height: 1.7rem; display: flex; align-items: center; justify-content: center;
+}
+.track .q { font-family: var(--serif); font-size: 1.2rem; color: var(--ink); display: block; }
+.track .h { font-size: 0.84rem; color: var(--ink-dim); margin-top: 0.15rem; }
+
+/* ---- copy block ---- */
+.copy-wrap { margin-top: 1.25rem; }
+.copy-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(13,20,17,0.8); border: 1px solid var(--card-bd);
+  border-bottom: none; border-radius: 11px 11px 0 0;
+  padding: 0.55rem 0.9rem;
+}
+.copy-bar .label { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--copper); }
+.copy-btn {
+  font-family: var(--mono); font-size: 0.74rem; font-weight: 600; letter-spacing: 0.04em;
+  color: var(--bg); cursor: pointer; border: none;
+  background: linear-gradient(100deg, var(--copper-lt), var(--ember));
+  border-radius: 30px; padding: 0.45rem 1.1rem;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+.copy-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(232,116,59,0.35); }
+.copy-btn.done { background: var(--forest); color: var(--ink); }
+pre {
+  font-family: var(--mono); font-size: 0.82rem; line-height: 1.7;
+  color: var(--ink); background: rgba(13,20,17,0.8);
+  border: 1px solid var(--card-bd); border-radius: 0 0 11px 11px;
+  padding: 1.1rem 1.1rem; overflow-x: auto; white-space: pre-wrap;
+}
+pre .v { color: var(--ember-glow); }
+
+/* ---- output structure grid ---- */
+.struct { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 1.25rem; }
+@media (max-width: 560px) { .struct { grid-template-columns: 1fr; } }
+.struct .item {
+  border: 1px solid var(--card-bd); border-radius: 11px; padding: 0.9rem 1rem;
+  background: rgba(198,149,92,0.04);
+}
+.struct .item .h { font-family: var(--serif); font-size: 1.15rem; color: var(--copper-lt); }
+.struct .item .d { font-size: 0.84rem; color: var(--ink-dim); margin-top: 0.15rem; }
+
+/* ---- example ---- */
+.example { background: rgba(44,95,90,0.10); border-color: rgba(44,95,90,0.35); }
+.example::before { background: linear-gradient(180deg, var(--forest), var(--copper)); }
+.example .card-num { background: var(--forest); }
+.ex-in, .ex-out { font-size: 0.9rem; }
+.ex-in { color: var(--ink-dim); font-style: italic; border-left: 2px solid rgba(155,124,139,0.4); padding-left: 1rem; margin: 0.5rem 0 1.2rem; }
+.ex-out { color: var(--ink); }
+.ex-out .lbl { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); display: block; margin: 0.9rem 0 0.2rem; }
+
+/* ---- callout ---- */
+.callout {
+  margin-top: 2.5rem; text-align: center;
+  border: 1px solid var(--card-bd); border-radius: 16px;
+  padding: 2rem 1.5rem; background: rgba(198,149,92,0.05);
+}
+.callout .t { font-family: var(--serif); font-size: 1.7rem; color: var(--ink); }
+.callout p { color: var(--ink-dim); margin-top: 0.5rem; }
+.cta {
+  display: inline-block; margin-top: 1.4rem;
+  font-family: var(--sans); font-size: 0.92rem; font-weight: 600; letter-spacing: 0.02em;
+  color: var(--bg); text-decoration: none;
+  background: linear-gradient(100deg, var(--copper-lt), var(--ember));
+  border-radius: 30px; padding: 0.7rem 1.6rem;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+.cta:hover { transform: translateY(-2px); box-shadow: 0 6px 22px rgba(232,116,59,0.4); }
+
+.foot { text-align: center; margin-top: 3rem; font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.1em; color: var(--ink-dim); opacity: 0.7; }
+
+.tip { font-size: 0.86rem; color: var(--gold); margin-top: 0.85rem; }
+.tip b { color: var(--gold); }
+</style>
+</head>
+<body>
+<div class="embers" id="embers"></div>
+
+<div class="wrap">
+
+  <div class="kicker">Soul-Forged Founders</div>
+  <h1 class="title">The Launch Plan Forge</h1>
+  <p class="lede">Turn a <b>10-minute voice memo</b> into a structured launch plan with Claude. No blank page. No overthinking. Just talk it out and let the forge do the shaping.</p>
+
+  <div class="promise">
+    <span class="pill">⏱ 10 minutes of talking</span>
+    <span class="pill">🤖 1 prompt, copy &amp; paste</span>
+    <span class="pill">📋 A real plan you can run</span>
+  </div>
+
+  <div class="rail">
+    <div class="step"><div class="n">MOVE 01</div><div class="t">Talk</div><div class="d">Record a voice memo using the talk track</div></div>
+    <div class="step"><div class="n">MOVE 02</div><div class="t">Forge</div><div class="d">Paste it into Claude with the master prompt</div></div>
+    <div class="step"><div class="n">MOVE 03</div><div class="t">Run</div><div class="d">Get a structured plan and sharpen it</div></div>
+  </div>
+
+  <!-- MOVE 1 -->
+  <div class="card">
+    <div class="card-head"><span class="card-num">1</span><h2 class="card-title">Record the voice memo</h2></div>
+    <div class="card-sub">~10 minutes · phone voice recorder or Claude voice</div>
+
+    <p>This is the whole secret: <b>you already know your launch.</b> It's just trapped in your head as scattered thoughts. Talking pulls it out faster than typing ever will, because you stop editing and start telling the truth.</p>
+
+    <div class="teach"><b>How to do it:</b> Open your phone's voice recorder. Read each prompt below out loud, then answer it like you're voice-noting a friend who gets your work. Ramble. Backtrack. Say "actually, wait." That mess is the raw ore. You don't need good sentences. You need honest ones.</div>
+
+    <p style="margin-top:1.25rem;"><b>Your talk track</b> — answer these 8 out loud, in order:</p>
+    <ol class="track">
+      <li><span class="q">What am I launching, and who is it for?</span><span class="h">Name the offer. Describe the one person it's built for like they're sitting across from you.</span></li>
+      <li><span class="q">What's the real transformation?</span><span class="h">Where are they before they buy, where are they after. Skip the features. Talk about the shift.</span></li>
+      <li><span class="q">Why now? Why does this matter to them today?</span><span class="h">The ache, the timing, the thing that's making this urgent in their life right now.</span></li>
+      <li><span class="q">What do I want to happen, in numbers?</span><span class="h">Sales, sign-ups, price point, the window you want it to land in. Guess if you have to.</span></li>
+      <li><span class="q">What do I already have?</span><span class="h">Email list size, audience, content, testimonials, past buyers, anything I can lean on.</span></li>
+      <li><span class="q">What's the offer stack and the price?</span><span class="h">What they get, bonuses, payment options, the deadline or scarcity if there is one.</span></li>
+      <li><span class="q">What's stopping them from buying?</span><span class="h">Every objection, doubt, and "but what about..." you can think of. Say them all.</span></li>
+      <li><span class="q">What feels scary or unclear about this launch?</span><span class="h">Be honest. This tells the plan where you need the most support.</span></li>
+    </ol>
+
+    <p class="tip"><b>Don't have 10 minutes to record?</b> Open Claude on your phone, tap the voice button, and just talk through the 8 prompts live. It transcribes as you go — skip straight to Move 2.</p>
+  </div>
+
+  <!-- MOVE 2 -->
+  <div class="card">
+    <div class="card-head"><span class="card-num">2</span><h2 class="card-title">Hand it to the forge</h2></div>
+    <div class="card-sub">Get your words into text, then run one prompt</div>
+
+    <div class="teach"><b>First, get a transcript.</b> Three easy ways: (1) record inside Claude's voice mode and it transcribes automatically, (2) use your phone's built-in voice-to-text while you talk, or (3) play the memo back and let your Notes app dictate it. Don't clean it up. Typos and "ums" are fine — Claude reads right through them.</div>
+
+    <p>Then open a new chat with <b>Claude</b>, paste the master prompt below, and paste your transcript where it says to. Hit enter. That's the forge.</p>
+
+    <div class="copy-wrap">
+      <div class="copy-bar">
+        <span class="label">⚒ The Master Prompt</span>
+        <button class="copy-btn" data-target="masterPrompt">Copy prompt</button>
+      </div>
+      <pre id="masterPrompt">You are my launch strategist. You think like a grounded, fiery direct-response marketer who also respects that I run a soul-led business. No corporate fluff, no hype, no "crush it" energy.
+
+Below is a raw, rambly voice-memo transcript where I brain-dumped about a launch. It's messy and out of order on purpose.
+
+Your job: turn it into a clear, structured launch plan I can actually run. Read the whole thing first, then build the plan in these sections:
+
+1. LAUNCH AT A GLANCE — the offer, who it's for, the price, the dates/window, and my goal in one tight paragraph.
+2. THE CORE PROMISE — the one-sentence transformation, plus 3 ways to say it (for an email subject, a post hook, and a sales-page headline).
+3. AUDIENCE & TIMING — who this is for and why now matters to them today.
+4. THE OFFER STACK — what they get, bonuses, price, payment options, and the deadline/scarcity.
+5. OBJECTIONS & ANSWERS — every objection I named (and any I missed), each with a one-line reframe I can use in content.
+6. THE LAUNCH RUNWAY — a day-by-day or phase-by-phase plan from today to cart close. For each phase: what to post/send, the angle, and the goal of that touch.
+7. CONTENT STARTERS — 5 specific post or email ideas with hooks, mapped to the runway.
+8. WHERE YOU NEED SUPPORT — based on what I said felt scary or unclear, flag the 2-3 riskiest parts and tell me exactly what to do about each.
+
+Rules:
+- Use ONLY what's in my transcript. If something critical is missing (like a price or a date), don't invent it — list it under "DECISIONS YOU STILL NEED TO MAKE" at the very end.
+- Match my voice: grounded, real, a little fiery. Never use em dashes. Never tell me I'm broken.
+- Be specific and usable. No generic marketing advice.
+
+When you're done, ask me ONE sharp question that would most improve the plan.
+
+Here's my transcript:
+<span class="v">[ PASTE YOUR VOICE MEMO TRANSCRIPT HERE ]</span></pre>
+    </div>
+  </div>
+
+  <!-- MOVE 3 -->
+  <div class="card">
+    <div class="card-head"><span class="card-num">3</span><h2 class="card-title">Run it and sharpen it</h2></div>
+    <div class="card-sub">What comes out, and how to make it sharper</div>
+
+    <p>In about 30 seconds you'll have a full launch plan. Here's the structure it gives you back:</p>
+
+    <div class="struct">
+      <div class="item"><div class="h">Launch at a Glance</div><div class="d">The whole launch in one paragraph</div></div>
+      <div class="item"><div class="h">The Core Promise</div><div class="d">Your transformation, said 3 ways</div></div>
+      <div class="item"><div class="h">Audience &amp; Timing</div><div class="d">Who it's for and why now</div></div>
+      <div class="item"><div class="h">The Offer Stack</div><div class="d">What they get, price, deadline</div></div>
+      <div class="item"><div class="h">Objections &amp; Answers</div><div class="d">Every doubt, with a reframe</div></div>
+      <div class="item"><div class="h">The Launch Runway</div><div class="d">Day-by-day plan to cart close</div></div>
+      <div class="item"><div class="h">Content Starters</div><div class="d">5 posts/emails with hooks</div></div>
+      <div class="item"><div class="h">Where You Need Support</div><div class="d">Your riskiest spots, handled</div></div>
+    </div>
+
+    <p style="margin-top:1.5rem;"><b>Now sharpen it.</b> The first draft is a strong skeleton. These follow-up prompts turn it into something you'd actually publish. Copy any one and send it in the same chat:</p>
+
+    <div class="copy-wrap">
+      <div class="copy-bar">
+        <span class="label">↳ Refine: write the content</span>
+        <button class="copy-btn" data-target="refine1">Copy</button>
+      </div>
+      <pre id="refine1">Take Content Starter #1 and write it out in full, in my voice. Then give me 2 alternate hooks for it.</pre>
+    </div>
+
+    <div class="copy-wrap">
+      <div class="copy-bar">
+        <span class="label">↳ Refine: build the runway out</span>
+        <button class="copy-btn" data-target="refine2">Copy</button>
+      </div>
+      <pre id="refine2">Turn the Launch Runway into a checklist with exact dates, starting from today. For each day, list the one most important action. Keep it realistic for a solo founder.</pre>
+    </div>
+
+    <div class="copy-wrap">
+      <div class="copy-bar">
+        <span class="label">↳ Refine: pressure-test it</span>
+        <button class="copy-btn" data-target="refine3">Copy</button>
+      </div>
+      <pre id="refine3">Be honest with me. What's the weakest part of this launch plan, and what would you change to make it convert better? Don't be polite, be useful.</pre>
+    </div>
+
+    <div class="copy-wrap">
+      <div class="copy-bar">
+        <span class="label">↳ Build: turn it into a Launch Plan artifact</span>
+        <button class="copy-btn" data-target="refine4">Copy</button>
+      </div>
+      <pre id="refine4">Now build me a single self-contained HTML artifact of this entire launch plan that I can open in my browser and actually run my launch from. Make it one .html file, no external dependencies except Google Fonts.
+
+Include:
+- A header with the offer name, my core promise, the price, and the launch window/cart-close date.
+- A countdown or clear "days until cart close" at the top.
+- An interactive CHECKLIST for the full Launch Runway — every action as a checkbox that I can tick off, grouped by phase or day. Save my progress in localStorage so checked items stay checked when I reopen it.
+- A progress bar showing how much of the runway I've completed.
+- A collapsible section for each part of the plan: Core Promise (all 3 versions), Offer Stack, Objections &amp; Answers, and the Content Starters with their hooks.
+- A "copy" button on each content starter so I can grab the text fast.
+
+Design it dark and premium: near-black background, warm copper and ember accents, a serif display font (Cormorant Garamond) for headings and a clean sans (Hanken Grotesk) for body. Grounded and a little fiery, never corporate. No em dashes anywhere in the copy.
+
+Use only the real details from my launch plan above. If a date or price is still undecided, put a clear "[ DECIDE THIS ]" placeholder instead of inventing it. Give me the complete file.</pre>
+    </div>
+  </div>
+
+  <!-- EXAMPLE -->
+  <div class="card example">
+    <div class="card-head"><span class="card-num">★</span><h2 class="card-title">See it work</h2></div>
+    <div class="card-sub">A 20-second taste of raw in, structured out</div>
+
+    <p><b>What went in</b> (messy voice memo):</p>
+    <p class="ex-in">"Okay so I want to launch my tarot reading membership again, it's called the Inner Circle, it's for women who already read for themselves but feel kind of stuck and alone in it... um, I think 47 dollars a month? I have like 1,200 people on my email list, did a beta last year that 30 people joined and loved... I'm scared no one will buy because I launched something in spring that flopped..."</p>
+
+    <p><b>What came back</b> (one section of the plan):</p>
+    <div class="ex-out">
+      <span class="lbl">The Core Promise — said 3 ways</span>
+      Email subject: <i>"A circle for women who already read for themselves."</i><br>
+      Post hook: <i>"Reading for yourself shouldn't feel this lonely."</i><br>
+      Sales headline: <i>"The Inner Circle: where women who read for themselves stop practicing alone."</i>
+      <span class="lbl">Where you need support</span>
+      You named the spring launch that flopped as your big fear. That's not a reason to hide — it's your opening. Address it head-on in your first email: name that the last one missed, what you changed, and why this one is different. Honesty converts the people who watched you the first time.
+    </div>
+  </div>
+
+  <div class="callout">
+    <div class="t">Your launch is already in you.</div>
+    <p>Ten minutes of talking is all it takes to pull it out. Hit record.</p>
+    <a class="cta" href="https://www.skool.com/soul-forged-founders/about" target="_blank" rel="noopener">Go to the community →</a>
+  </div>
+
+  <div class="foot">FORGED FOR SOUL-FORGED FOUNDERS · TALK IT · FORGE IT · RUN IT</div>
+
+</div>
+
+<script>
+// ambient embers
+(function () {
+  const layer = document.getElementById('embers');
+  const N = 26;
+  for (let i = 0; i < N; i++) {
+    const e = document.createElement('span');
+    e.className = 'ember';
+    e.style.left = Math.random() * 100 + '%';
+    const dur = 9 + Math.random() * 11;
+    e.style.animationDuration = dur + 's';
+    e.style.animationDelay = (-Math.random() * dur) + 's';
+    const s = 2 + Math.random() * 2.5;
+    e.style.width = s + 'px'; e.style.height = s + 'px';
+    if (Math.random() > 0.6) e.style.background = 'var(--copper-lt)';
+    layer.appendChild(e);
+  }
+})();
+
+// copy buttons
+document.querySelectorAll('.copy-btn').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    const el = document.getElementById(btn.dataset.target);
+    const text = el.innerText.replace(/ /g, ' ');
+    navigator.clipboard.writeText(text).then(function () {
+      const old = btn.textContent;
+      btn.textContent = '✓ Copied';
+      btn.classList.add('done');
+      setTimeout(function () { btn.textContent = old; btn.classList.remove('done'); }, 1800);
+    }).catch(function () {
+      // fallback
+      const r = document.createRange(); r.selectNode(el);
+      const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+      try { document.execCommand('copy'); btn.textContent = '✓ Copied'; setTimeout(function(){ btn.textContent = 'Copy'; }, 1800); } catch (e) {}
+      sel.removeAllRanges();
+    });
+  });
+});
+</script>
+</body>
+</html>
